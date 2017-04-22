@@ -1,0 +1,5 @@
+= MeteoInfo
+
+Generate this with
+    MeteoInfo rdoc
+After you have described your command line interface

@@ -1,0 +1,6 @@
+= MeteoInfo
+
+Describe your project here
+
+:include:MeteoInfo.rdoc
+
