@@ -1,14 +1,7 @@
 require 'test_helper'
+require 'MeteoInfo'
 
-class DefaultTest < Test::Unit::TestCase
-
-  def setup
-  end
-
-  def teardown
-  end
-
-  def test_the_truth
-    assert true
+describe 'A COMPLETER' do
+  it 'a completer' do
   end
 end
