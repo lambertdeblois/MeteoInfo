@@ -32,19 +32,17 @@ default_value VILLE_DEFAUT
 arg_name 'ville_utilise'
 flag [:ville]
 
-desc "Ecrit les informations d'une ville dans le fichier MeteoInfo.txt"
-arg_name 'Describe arguments to general here'
+desc "Ecrit les informations d'une ville dans le fichier #{DEPOT_GENERAL}"
 command :general do |general|
   general.desc 'Liste MeteoInfo.txt en plus'
   general.switch :lister
 
-  general.desc 'Describe a flag to general'
-  general.default_value 'default'
-  general.flag :f
   general.action do |global_options,options,args|
 
     # Your command logic here
-
+    p global_options
+    p options
+    p args
     # If you have any errors, just raise them
     # raise "that command made no sense"
 
@@ -52,7 +50,7 @@ command :general do |general|
   end
 end
 
-desc 'Describe precipitation here'
+desc "Ecrit les precipitations dans le fichier #{DEPOT_PRECIPITATION}"
 arg_name '[date1] [date2]'
 command :precipitation do |c|
   c.action do |global_options,options,args|
@@ -61,10 +59,16 @@ command :precipitation do |c|
   end
 end
 
-desc 'Describe temperature here'
+desc "Ecrit la temperature dans le fichier #{DEPOT_TEMPERATURE}"
 arg_name 'date'
-command :temperature do |c|
-  c.action do |global_options,options,args|
+command :temperature do |temperature|
+  temperature.desc 'Pour preciser l\'unite utilise'
+  temperature.flag :unite, :arg_name => 'unite', :default_value => 'C'
+
+  temperature.action do |global_options,options,args|
+    p global_options
+    p options[:unite]
+    p args
     puts "temperature command ran"
   end
 end
