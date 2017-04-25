@@ -11,9 +11,15 @@ end
 
 include GLI::App
 
+VILLE_DEFAUT = 'montreal' # ville par defaut
+DEPOT_GENERAL = 'MIGeneral.txt' # depot pour la commande general
+DEPOT_PRECIPITATION = 'MIPrecipitation.txt' # depot pour la commande precipitation
+DEPOT_TEMPERATURE = 'MIPrecipitation.txt' # depot pour la commande temperature
+MI = MeteoInfo # alias pour alleger le code
+
 program_desc 'Application pour consulter les infos meteo'
 
-version MeteoInfo::VERSION
+version MI::VERSION
 
 subcommand_option_handling :normal
 arguments :strict
@@ -47,15 +53,16 @@ command :general do |general|
 end
 
 desc 'Describe precipitation here'
-arg_name 'Describe arguments to precipitation here'
+arg_name '[date1] [date2]'
 command :precipitation do |c|
   c.action do |global_options,options,args|
     puts "precipitation command ran"
+    # p args.length
   end
 end
 
 desc 'Describe temperature here'
-arg_name 'Describe arguments to temperature here'
+arg_name 'date'
 command :temperature do |c|
   c.action do |global_options,options,args|
     puts "temperature command ran"
