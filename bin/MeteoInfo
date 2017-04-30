@@ -30,12 +30,12 @@ arguments :strict
 desc 'Ville utilise pour aller chercher les informations meteo'
 default_value VILLE_DEFAUT
 arg_name 'ville_utilise'
-flag [:ville]
+flag [:ville] # --ville=toronto
 
 desc "Ecrit les informations d'une ville dans le fichier #{DEPOT_GENERAL}"
 command :general do |general|
   general.desc 'Liste MeteoInfo.txt en plus'
-  general.switch :lister
+  general.switch :lister # --lister
 
   general.action do |global_options,options,args|
 
@@ -63,7 +63,7 @@ desc "Ecrit la temperature dans le fichier #{DEPOT_TEMPERATURE}"
 arg_name 'date'
 command :temperature do |temperature|
   temperature.desc 'Pour preciser l\'unite utilise'
-  temperature.flag :unite, :arg_name => 'unite', :default_value => 'C'
+  temperature.flag :unite, :arg_name => 'unite', :default_value => 'C' # --unite=F
 
   temperature.action do |global_options,options,args|
     p global_options
