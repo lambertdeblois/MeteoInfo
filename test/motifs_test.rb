@@ -18,12 +18,12 @@ module MeteoInfo
     end
 
     describe Motifs::PRECIPITATION do
-      it_ "matche une precipitation avec mm" do
-        '100mm'.must_match Motifs::PRECIPITATION
+      it_ "matche une precipitation" do
+        '100'.must_match Motifs::PRECIPITATION
       end
 
-      it_ "matche une precipitation sans mm" do
-        "100".must_match Motifs::PRECIPITATION
+      it_ "ne matche pas une precipitation en lettre" do
+        "cent".wont_match Motifs::PRECIPITATION
       end
     end
 
@@ -42,6 +42,10 @@ module MeteoInfo
 
       it_ "matche zero" do
         "0".must_match Motifs::TEMPERATURE
+      end
+
+      it_ "matche un nombre negatif" do
+        "-3".must_match Motifs::TEMPERATURE
       end
     end
 
