@@ -11,8 +11,9 @@ module MeteoInfo
     #   /.../
 
     DATE =  %r{\b[0-9]{4}-[0-9]{2}-[0-9]{2}\b}
-    PRECIPITATION = %r{[0-9]+(mm)?}
-    TEMPERATURE = %r{[0-9]+}
+    PRECIPITATION = %r{[0-9]+}
+    TEMPERATURE = %r{-?[0-9]+}
+    UNITE = %r{[FC]}
 
   end
 end
