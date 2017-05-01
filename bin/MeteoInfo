@@ -14,7 +14,7 @@ include GLI::App
 VILLE_DEFAUT = 'montreal' # ville par defaut
 DEPOT_GENERAL = 'MIGeneral.txt' # depot pour la commande general
 DEPOT_PRECIPITATION = 'MIPrecipitation.txt' # depot pour la commande precipitation
-DEPOT_TEMPERATURE = 'MIPrecipitation.txt' # depot pour la commande temperature
+DEPOT_TEMPERATURE = 'MITemperature.txt' # depot pour la commande temperature
 MI = MeteoInfo # alias pour alleger le code
 
 program_desc 'Application pour consulter les infos meteo'
@@ -39,14 +39,19 @@ command :general do |general|
 
   general.action do |global_options,options,args|
 
-    # Your command logic here
-    p global_options
-    p options
-    p args
-    # If you have any errors, just raise them
-    # raise "that command made no sense"
+    # appel d'un api de meteo qui donne les infos pour la --ville
+    # appel pour formater les infos dans une ligne
+    # pour l'instant j'utilise des donnees hard coder dans un fichier txt
+    ville = global_options[:ville]
+    date = Time.now.strftime("%Y-%m-%d")
+    ligne = File.readlines("BD.txt")
+            .select { |ligne| ligne =~ /Ville: #{ville} - Date: #{date}/ }
+    nouvel_info = ligne_to_info( ville, date, ligne )
 
-    puts "general command ran"
+    File.open(DEPOT_GENERAL, 'w') { |file| file.write(nouvel_info) }
+    if options[:lister]
+      puts nouvel_info
+    end
   end
 end
 
@@ -71,6 +76,13 @@ command :temperature do |temperature|
     p args
     puts "temperature command ran"
   end
+end
+
+def ligne_to_info( ville, date, ligne )
+  precipitation = ligne[0].match(/Precipitation: (#{MeteoInfo::Motifs::PRECIPITATION})/)[1]
+  temperature = ligne[0].match(/Temperature: (#{MeteoInfo::Motifs::TEMPERATURE})/)[1]
+  unite = ligne[0].match(/: #{MeteoInfo::Motifs::TEMPERATURE}([CF])/)[1]
+  MeteoInfo::Info.new(ville, date, precipitation, temperature, unite)
 end
 
 pre do |global,command,options,args|
