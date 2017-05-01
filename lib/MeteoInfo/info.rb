@@ -27,7 +27,7 @@ module MeteoInfo
 
 
     def to_s()
-      format("Ville: %s - Date: %s - Temperature: %s%s - Precipitation: %s mm",
+      format("Ville: %s - Date: %s - Temperature: %s%s - Precipitation: %smm",
                       ville,    date,       temperature, unite,   precipitation)
     end
   end
