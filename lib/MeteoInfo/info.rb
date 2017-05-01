@@ -4,10 +4,10 @@ module MeteoInfo
   class Info
     include Comparable
 
-    attr_reader :ville, :date, :temperature, :precipitation
+    attr_reader :ville, :date, :temperature, :precipitation, :unite
 
 
-    def initialize( ville, date, precipitation, temperature, unite="C" )
+    def initialize( ville, date, precipitation, temperature, unite )
       DBC.require( !ville.strip.empty?, "Ville vide: '#{ville}'" )
       date ||= Time.now.strftime("%Y-%m-%d")
       DBC.require( /^#{Motifs::DATE}$/ =~ date )
@@ -27,7 +27,7 @@ module MeteoInfo
 
 
     def to_s()
-      format("Ville: %s    Date: %s\nTemperature: %s°%s\nPrecipitation: %s mm",
+      format("Ville: %s - Date: %s - Temperature: %s%s - Precipitation: %s mm",
                       ville,    date,       temperature, unite,   precipitation)
     end
   end
