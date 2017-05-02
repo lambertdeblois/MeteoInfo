@@ -20,8 +20,3 @@ Rake::TestTask.new(:test_acceptation) do |t|
   t.libs << "test_acceptation"
   t.test_files = FileList['test_acceptation/*_test.rb']
 end
-
-Rake::TestTask.new do |t|
-  t.libs << "test"
-  t.test_files = FileList['test/*_test.rb']
-end
