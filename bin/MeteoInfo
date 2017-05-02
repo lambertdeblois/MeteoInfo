@@ -56,11 +56,29 @@ command :general do |general|
 end
 
 desc "Ecrit les precipitations dans le fichier #{DEPOT_PRECIPITATION}"
-arg_name '[date1] [date2]'
+arg_name 'date [date2]...'
 command :precipitation do |c|
   c.action do |global_options,options,args|
-    puts "precipitation command ran"
-    # p args.length
+
+    erreur_nb_arguments args unless args.size > 0
+    args.each do |date|
+      erreur "Date mal formatee" unless date =~ MeteoInfo::Motifs::DATE
+    end
+    ville = global_options[:ville]
+    lignes = Array.new
+    args.each do |date|
+      lignes << File.readlines("BD.txt")
+                    .select { |ligne| ligne =~ /Ville: #{ville} - Date: #{date}/ }
+    end
+    precipitations = Array.new
+    lignes.each do |ligne|
+      precipitations << ligne[0].match(/Precipitation: (#{MeteoInfo::Motifs::PRECIPITATION})/)[1]
+    end
+    total_prec = precipitations.map(&:to_i).reduce(:+)
+    a_ecrire = format("Il a plu pour %i mm de pluie a %s durant les dates mentionnees.",
+                      total_prec,
+                      ville)
+    File.open(DEPOT_PRECIPITATION, 'w') { |file| file.write(a_ecrire) }
   end
 end
 
@@ -71,10 +89,30 @@ command :temperature do |temperature|
   temperature.flag :unite, :arg_name => 'unite', :default_value => 'C' # --unite=F
 
   temperature.action do |global_options,options,args|
-    p global_options
-    p options[:unite]
-    p args
-    puts "temperature command ran"
+
+    erreur_nb_arguments args unless args.size == 1
+    erreur "Date mal formatee" unless args[0] =~ MeteoInfo::Motifs::DATE
+    erreur "Unite inconnue" unless options[:unite] =~ MeteoInfo::Motifs::UNITE
+    # appel d'un api de meteo qui donne les infos pour la --ville
+    # appel pour formater les infos dans une ligne
+    # pour l'instant j'utilise des donnees hard coder dans un fichier txt
+    ville = global_options[:ville]
+    date = args[0]
+    ligne = File.readlines("BD.txt")
+                  .select { |ligne| ligne =~ /Ville: #{ville} - Date: #{date}/ }
+    temperature = ligne[0].match(/Temperature: (#{MeteoInfo::Motifs::TEMPERATURE})([CF])/)[1,2]
+    if options[:unite] == "C" && temperature[1] == "F"
+      temp = (temperature[0].to_i - 32) * 5/9
+    elsif options[:unite] == "F" && temperature[1] == "C"
+      temp = (temperature[0].to_i * 9/5) + 32
+    else
+      temp = temperature[0]
+    end
+    a_ecrire = format("La temperature a %s est de %s degre %s.",
+                        ville,
+                        temp,
+                        options[:unite] == "C" ? "celsius" : "farenheit")
+    File.open(DEPOT_TEMPERATURE, 'w') { |file| file.write(a_ecrire) }
   end
 end
 
@@ -98,6 +136,14 @@ post do |global,command,options,args|
   # Post logic here
   # Use skips_post before a command to skip this
   # block on that command only
+end
+
+def erreur( msg )
+  exit_now! "*** Erreur: #{msg}"
+end
+
+def erreur_nb_arguments( *args )
+  erreur "Nombre incorrect d'arguments: <<#{args.join(' ')}>>"
 end
 
 on_error do |exception|
