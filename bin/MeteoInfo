@@ -39,11 +39,11 @@ command :general do |general|
 
   general.action do |global_options,options,args|
 
+    ville = global_options[:ville]
+    date = Time.now.strftime("%Y-%m-%d")
     # appel d'un api de meteo qui donne les infos pour la --ville
     # appel pour formater les infos dans une ligne
     # pour l'instant j'utilise des donnees hard coder dans un fichier txt
-    ville = global_options[:ville]
-    date = Time.now.strftime("%Y-%m-%d")
     ligne = File.readlines("BD.txt")
             .select { |ligne| ligne =~ /Ville: #{ville} - Date: #{date}/ }
     nouvel_info = ligne_to_info( ville, date, ligne )
@@ -62,7 +62,7 @@ command :precipitation do |c|
 
     erreur_nb_arguments args unless args.size > 0
     args.each do |date|
-      erreur "Date mal formatee" unless date =~ MeteoInfo::Motifs::DATE
+      erreur "Date mal formatee" unless date =~ MI::Motifs::DATE
     end
     ville = global_options[:ville]
     lignes = Array.new
@@ -71,8 +71,11 @@ command :precipitation do |c|
                     .select { |ligne| ligne =~ /Ville: #{ville} - Date: #{date}/ }
     end
     precipitations = Array.new
+    # appel d'un api de meteo qui donne les infos pour la --ville
+    # appel pour formater les infos dans une ligne
+    # pour l'instant j'utilise des donnees hard coder dans un fichier txt
     lignes.each do |ligne|
-      precipitations << ligne[0].match(/Precipitation: (#{MeteoInfo::Motifs::PRECIPITATION})/)[1]
+      precipitations << ligne[0].match(/Precipitation: (#{MI::Motifs::PRECIPITATION})/)[1]
     end
     total_prec = precipitations.map(&:to_i).reduce(:+)
     a_ecrire = format("Il a plu pour %i mm de pluie a %s durant les dates mentionnees.",
@@ -91,16 +94,17 @@ command :temperature do |temperature|
   temperature.action do |global_options,options,args|
 
     erreur_nb_arguments args unless args.size == 1
-    erreur "Date mal formatee" unless args[0] =~ MeteoInfo::Motifs::DATE
-    erreur "Unite inconnue" unless options[:unite] =~ MeteoInfo::Motifs::UNITE
+    erreur "Date mal formatee" unless args[0] =~ MI::Motifs::DATE
+    erreur "Unite inconnue" unless options[:unite] =~ MI::Motifs::UNITE
+
+    ville = global_options[:ville]
+    date = args[0]
     # appel d'un api de meteo qui donne les infos pour la --ville
     # appel pour formater les infos dans une ligne
     # pour l'instant j'utilise des donnees hard coder dans un fichier txt
-    ville = global_options[:ville]
-    date = args[0]
     ligne = File.readlines("BD.txt")
                   .select { |ligne| ligne =~ /Ville: #{ville} - Date: #{date}/ }
-    temperature = ligne[0].match(/Temperature: (#{MeteoInfo::Motifs::TEMPERATURE})([CF])/)[1,2]
+    temperature = ligne[0].match(/Temperature: (#{MI::Motifs::TEMPERATURE})([CF])/)[1,2]
     if options[:unite] == "C" && temperature[1] == "F"
       temp = (temperature[0].to_i - 32) * 5/9
     elsif options[:unite] == "F" && temperature[1] == "C"
@@ -117,25 +121,18 @@ command :temperature do |temperature|
 end
 
 def ligne_to_info( ville, date, ligne )
-  precipitation = ligne[0].match(/Precipitation: (#{MeteoInfo::Motifs::PRECIPITATION})/)[1]
-  temperature = ligne[0].match(/Temperature: (#{MeteoInfo::Motifs::TEMPERATURE})/)[1]
-  unite = ligne[0].match(/: #{MeteoInfo::Motifs::TEMPERATURE}([CF])/)[1]
-  MeteoInfo::Info.new(ville, date, precipitation, temperature, unite)
+  precipitation = ligne[0].match(/Precipitation: (#{MI::Motifs::PRECIPITATION})/)[1]
+  temperature = ligne[0].match(/Temperature: (#{MI::Motifs::TEMPERATURE})/)[1]
+  unite = ligne[0].match(/: #{MI::Motifs::TEMPERATURE}([CF])/)[1]
+  MI::Info.new(ville, date, precipitation, temperature, unite)
 end
 
 pre do |global,command,options,args|
-  # Pre logic here
-  # Return true to proceed; false to abort and not call the
-  # chosen command
-  # Use skips_pre before a command to skip this block
-  # on that command only
   true
 end
 
 post do |global,command,options,args|
-  # Post logic here
-  # Use skips_post before a command to skip this
-  # block on that command only
+
 end
 
 def erreur( msg )

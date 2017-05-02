@@ -29,7 +29,7 @@ module MeteoInfo
 
     describe "#to_s" do
       it_ "genere par defaut une forme simple" do
-        montreal.to_s.must_equal "Ville: montreal - Date: 2017-01-01 - Temperature: 20C - Precipitation: 100 mm"
+        montreal.to_s.must_equal "Ville: montreal - Date: 2017-01-01 - Temperature: 20C - Precipitation: 100mm"
       end
     end
   end
